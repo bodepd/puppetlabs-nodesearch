@@ -16,6 +16,7 @@ the list of hosts.
       raise Puppet::Error, "filter: #{name}, is not prefixed with facts."
     end
   end
+  #expiration_time = args[2] || 60
   # TODO - support some expiration time
   nodes_1 = Puppet::Face[:facts, :current].search('fake_key', facts_filter)
   nodes_2 = Puppet::Face[:hostclass, :current].search('fake_key', {:classes => class_filter)
