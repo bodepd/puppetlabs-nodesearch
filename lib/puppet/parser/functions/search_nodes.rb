@@ -18,7 +18,11 @@ the list of hosts.
   end
   #expiration_time = args[2] || 60
   # TODO - support some expiration time
-  nodes_1 = Puppet::Face[:facts, :current].search('fake_key', facts_filter)
-  nodes_2 = Puppet::Face[:hostclass, :current].search('fake_key', {:classes => class_filter)
-  nodes_1 & nodes_2
+  facts_search_nodes = Puppet::Face[:facts, :current].search('fake_key', {:extra => facts_filter})
+  class_search_nodes = Puppet::Face[:hostclass, :current].search({:classes => class_filter})
+  if facts_filter.empty? or class_filter.empty?
+    facts_search_nodes | class_search_nodes
+  else
+    facts_search_nodes & class_search_nodes
+  end
 end
