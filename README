@@ -1,0 +1,77 @@
+LICENSE: Apache v2
+
+AUTHOR: Dan Bode
+
+This is currently a prototype.
+
+Overview:
+
+This module is intended to provide basic functionality for searching information about
+class inclusion in storedconfigs from both the command line as well as
+from Puppet manifests.
+
+Pre-requisites:
+
+This code will only work against Puppet 2.7.3 or higher.
+
+It requires that storedconfigs is enabled. For more information about
+configuring storedconfigs, look here:
+
+  http://projects.puppetlabs.com/projects/1/wiki/Using_Stored_Configuration
+
+
+This has only been tested against mysql as the backend for storedconfigs.
+
+Usage:
+
+command line:
+
+To use puppet hostclass from the command line, you will have to
+add the lib directory of this module to your RUBYLIB env variabe.
+
+  export RUBYLIB=/etc/puppet/modules/puppetlabs-nodesearch/lib:$RUBYLIB
+
+  # returns a list of nodes whose last compiled catalog contains
+  # the classes foo, bar, AND baz
+  puppet hostclass search --classes foo,bar,baz
+
+As a puppet function:
+
+from within Puppet, you can invoke the function search_nodes
+
+search nodes allows you to specify both facts as well as classes to
+use as a filter for searching nodes.
+
+If you intend to search for facts, then you will need to set inventory_active_record
+as the facts terminus.
+
+  facts_terminus=inventory_active_record
+
+The functions search_nodes takes a has as the only parameter.
+
+The hash can have either keys prefixed with facts. or a key called classes which
+expects an array.
+
+Examples of usage:
+  Full examples have been provided in the examples directory:
+
+node db::server {
+  class { 'db::server':
+    # authorize clients that use the class db::client
+    allowed_clients => search_nodes({classes => ['db::client']}),
+  }
+}
+
+Below is the main section from puppet.conf that I used for testing:
+
+[main]
+    storeconfigs = true
+    dbadapter = mysql
+    dbname = puppet
+    dbserver = localhost
+    dbuser = root
+    dbpassword = password
+    dbsocket = /var/lib/mysql/mysql.sock
+    facts_terminus=inventory_active_record
+    modulepath=/etc/puppet/modules:/etc/puppet/modules/puppetlabs-nodesearch/examples/modules
+    manifest=/etc/puppet/modules/puppetlabs-nodesearch/examples/manifests/site.pp
