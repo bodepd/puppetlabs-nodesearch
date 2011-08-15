@@ -1,14 +1,14 @@
 require 'puppet/face'
 Puppet::Parser::Functions.newfunction(:search_nodes, :type => :rvalue) do |args|
-  @doc =  '
 
+  @doc =  '
 Takes a hash of the filters that will be used to create
 the list of hosts.
 
   keys of the form: facts.somefact are filters based on facts
   a key of the form: classes createa filter based on classes
-
 '
+
   facts_filter = args[0] || {}
   class_filter = facts_filter.delete['classes'] || []
   expiration_time = args[2] || 60
