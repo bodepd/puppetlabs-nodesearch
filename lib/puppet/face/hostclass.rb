@@ -34,7 +34,13 @@ Puppet::Face.define(:hostclass, '0.0.1') do
         nodes.map { |n| n.host_name }
       end
       if operator == :intersection
-        nodes.inject(nodes.flatten.uniq, :&)
+        # only return the nodes that contain all of the classes
+        # I would use inject, but I want to support 1.8.5
+        intersected_nodes = nodes.pop || []
+        nodes.each do |node_list|
+          intersected_nodes = intersected_nodes & node_list
+        end
+        intersected_nodes
       elsif operator == :union
         nodes.flatten.uniq
       else
@@ -42,5 +48,4 @@ Puppet::Face.define(:hostclass, '0.0.1') do
       end
     end
   end
-
 end
