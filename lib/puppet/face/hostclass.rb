@@ -8,15 +8,13 @@ Puppet::Face.define(:hostclass, '0.0.1') do
   copyright "Puppet Labs", 2011
   license   "Apache 2 license; see COPYING"
 
-  summary "Search for nodes that have included a class."
-
   action(:search) do
-    summary 'list nodes whose catalog contains a class'
+    summary 'list nodes whose latest catalog contains a class'
     option '--classes classes' do
       summary 'classes to filter on'
     end
     option '--result_combine operator' do
-      summary 'rather to combine searches using and or or'
+      summary 'rather to combine searches using "and" or "or"'
     end
     when_invoked do |options|
       return [] unless options[:classes]
@@ -27,8 +25,11 @@ Puppet::Face.define(:hostclass, '0.0.1') do
       else
       end
       operator = options[:result_combine] ? options[:result_combine].to_sym : :intersection
+      # this is required to establish the connection
       Puppet::Rails.init
+      # collect the nodes that contain a single class
       nodes = klasses.collect do |class_name|
+        # it may be faster to combine the classes into a single query
         nodes = Puppet::Rails::Resources.find_by_sql("SELECT hosts.name as host_name FROM resources INNER JOIN hosts ON hosts.id = resources.host_id WHERE resources.title='#{class_name}' and resources.restype='class';")
         nodes.map { |n| n.host_name }
       end
