@@ -5,8 +5,6 @@ require 'puppet/rails/resources'
 
 Puppet::Face.define(:hostclass, '0.0.1') do
 
-  Puppet.parse_config
-
   copyright "Puppet Labs", 2011
   license   "Apache 2 license; see COPYING"
 
