@@ -6,9 +6,8 @@ This is currently a prototype.
 
 Overview:
 
-This module is intended to provide basic functionality for searching information about
-class inclusion in storedconfigs from both the command line as well as
-from Puppet manifests.
+This module provides facilities for searching for a list of nodes using
+facts and classes contained in the last compiled catalag as filters.
 
 Pre-requisites:
 
@@ -42,18 +41,20 @@ from within Puppet, you can invoke the function search_nodes
 search nodes allows you to specify both facts as well as classes to
 use as a filter for searching nodes.
 
-If you intend to search for facts, then you will need to set inventory_active_record
-as the facts terminus.
+If you intend to use facts as filters, then you will need to set inventory_active_record
+as the facts terminus in puppet.conf (as as an option to puppet).
 
   facts_terminus=inventory_active_record
 
-The functions search_nodes takes a has as the only parameter.
+The functions search_nodes takes a hash as the only parameter.
 
 The hash can have either keys prefixed with facts. or a key called classes which
 expects an array.
 
 Examples of usage:
-  Full examples have been provided in the examples directory:
+
+The following example shows how the function could be used to grant access to a database
+to only nodes that have been assigned a specific class.
 
 node db::server {
   class { 'db::server':
@@ -61,6 +62,8 @@ node db::server {
     allowed_clients => search_nodes({classes => ['db::client']}),
   }
 }
+
+Full examples have been provided in the examples directory:
 
 Below is the main section from puppet.conf that I used for testing:
 
